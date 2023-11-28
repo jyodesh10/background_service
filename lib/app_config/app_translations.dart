@@ -1,0 +1,53 @@
+import 'package:get/get.dart';
+
+class AppTranslations extends Translations {
+  @override
+  Map<String, Map<String, String>> get keys => {
+    'en_US': {
+      'title'                : 'Guard Signal',
+      'appbarTitle'          : 'UserID',
+      'connecting'           : '接続中',
+      'connected'            : 'Connected',
+      'disconnected'         : 'Disconnected',
+      'auxConnected'         : 'AUX Connected',
+      'auxDisconnected'      : 'AUX Disconnected',
+      'deviceHistory'        : 'History',
+      'popUpTitle'           : 'Enter a Contact that you want to call.',
+      'prevContact'          : 'Prev Contact : ',
+      'noData'               : 'No Data',
+      'hintText1'            : 'Enter a contact.',
+      'snackbarMsg1'         : 'Please Enter a Contact First.',
+      'restartAppMsg'        : 'You will need to restart the App to change the contact.',
+      'identifierError'      : 'Failed to get Unique Identifier.',
+      'notConnectedServerMsg': 'Not Connected To Server !!!',
+      'turnOnWifi'           : 'Please Turn On Wifi.',
+      'noInternetMsg'        : 'Internet Not Connected',
+      'save'                 : 'Save',    
+      'ok'                   : 'OK',
+      'settings'             : 'Settings',
+    },
+    'ja_JP': {
+      'title'                : 'Guard Signal',
+      'appbarTitle'          : 'デバイスID',
+      'connecting'           : '接続中',
+      'connected'            : 'Connected',
+      'disconnected'         : 'Disconnected',
+      'auxConnected'         : 'AUX Connected',
+      'auxDisconnected'      : 'AUX Disconnected',
+      'deviceHistory'        : 'History',
+      'popUpTitle'           : 'Enter a Contact that you want to call.',
+      'prevContact'          : 'Prev Contact : ',
+      'noData'               : 'No Data',
+      'hintText1'            : 'Enter a contact.',
+      'snackbarMsg1'         : 'Please Enter a Contact First.',
+      'restartAppMsg'        : 'You will need to restart the App to change the contact.',
+      'identifierError'      : 'Failed to get Unique Identifier.',
+      'notConnectedServerMsg': 'Not Connected To Server !!!',
+      'turnOnWifi'           : 'Please Turn On Wifi.',
+      'noInternetMsg'        : 'Internet Not Connected',
+      'save'                 : 'Save',
+      'ok'                   : 'OK',
+      'settings'             : 'Settings',
+    },
+  };
+}
