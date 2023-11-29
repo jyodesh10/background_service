@@ -79,7 +79,6 @@ class _HomePageState extends State<HomePage> {
       if(await SharedPref.read(AppConstant.justOpenedAppKey, defaultValue: "") == false){
         if(_headsetState == HeadsetState.DISCONNECT){
           // audioCon.warningSound1(true,true);
-
           if(homeCon.wifiList.map((e) => e['ssid']).toList().contains(homeCon.wifiname.value)){
             if(homeCon.wifiList.where((element) => element["ssid"].toString()==homeCon.wifiname.value).map((e) => e['priority']).toList().contains("high")){
               audioCon.warningSound1(true,true);
@@ -482,6 +481,12 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                homeCon.sendHttpRequestToServer("deviceStatus");
+              },
+              child: const Icon(Icons.send),
             ),
           ),
         );

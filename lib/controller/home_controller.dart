@@ -1,3 +1,4 @@
+
 import 'package:device_information/device_information.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,12 +7,11 @@ import 'package:get/get.dart';
 import 'package:headset_connection_event/headset_event.dart';
 import 'package:intl/intl.dart';
 import 'package:socket_io_client/socket_io_client.dart';
-import 'package:http/http.dart' as http;
 import '../constant/constants.dart';
 import '../utils/shared_pref.dart';
-import '../view/home.dart';
 import "package:carrier_info_v3/carrier_info.dart";
 
+import '../view/home.dart';
 import '../widgets/snackbar_widget.dart';
 
 class HomeController extends GetxController{
@@ -117,6 +117,28 @@ class HomeController extends GetxController{
       }
       receivedDataFromServer.value = data.toString();
     });
+    socket.on('plugInStatus', (data) {
+      // Process the data as needed
+      if (kDebugMode) {
+        print("------------PluggedIN$data ------------");
+      }
+      showSnackbar('Plugged In: $data');
+    });
+    socket.on('plugOutStatus', (data) {
+      // Process the data as needed
+      if (kDebugMode) {
+        print("------------PluggedOut$data ------------");
+      }
+      showSnackbar('Plugged Out: $data');
+    });
+
+    socket.on('wifiStatus',(data) {
+      if (kDebugMode) {
+        print('--------------------WIFI Status$data--------------------');
+      }
+      showSnackbar('WifiSatats: $data');
+    },);
+
     socket.connect();
   }
 
@@ -143,7 +165,7 @@ class HomeController extends GetxController{
   getStoredSocketUrl() async {
     final String? storedSocketUrl = await SharedPref.read(AppConstant.socketServerUrlKey, defaultValue: "");
     if(storedSocketUrl==null||storedSocketUrl==""){
-      serverUrlCon.text='http://192.168.1.106:3001';
+      serverUrlCon.text='http://localhost:7000/';
       return serverUrlCon.text;
     }
     else{
@@ -158,40 +180,46 @@ class HomeController extends GetxController{
       String serverUrl = serverUrlCon.text.trim();
       // Create a JSON object with the message and device name
       final jsonData = {
-        "deviceStatus"          : deviceStatus,
-        "deviceName"            : deviceName,
-        "imeiNo"                : imeiNo,
-        "modelName"             : modelName,
-        "manufacturer"          : manufacturer,
-        "wifi name"             : wifiname.value,
-        "Datetime"              : DateTime.now(),
-        "carrierName"           : carrierInfo!.carrierName.toString(),
-        "cid"                   : carrierInfo!.cid.toString(),
-        "isoCountryCode"        : carrierInfo!.isoCountryCode.toString(),
-        "lac"                   : carrierInfo!.lac.toString(),
-        "mobileCountryCode"     : carrierInfo!.mobileCountryCode.toString(),
-        "mobilenetworkCode"     : carrierInfo!.mobileNetworkCode.toString(),
-        "mobileNetworkOperator" : carrierInfo!.mobileNetworkOperator.toString(),
-        "networkgeneration"     : carrierInfo!.networkGeneration.toString(),
-        "radiotype"             : carrierInfo!.radioType.toString(),
-        "allowsVOIP"            : carrierInfo!.allowsVOIP.toString(),
+        "notification_type": "pluggedIn", 
+        "message": "Device plugged out successful", 
+        "device_id": 1, 
+        "device_code": imeiNo.toString(), 
+        "device_name": deviceName.toString(), 
+        "access_point_id": 1, 
+        "access_point_code": "", 
+        "access_point_name": "", 
+        "building_id": 1, 
+        "building_code": "", 
+        "building_name": "", 
+        "area_id": 1, 
+        "area_code": "", 
+        "area_name": "", 
+        "floor": "3", 
+        "danger_area_type": "", 
+        "alert_type": "", 
+        "active_user_id": 1, 
+        "active_user_name": "", 
+        "publish_flg": 1, 
+        "created_at": "2023-11-29 18:18:34", 
+        "updated_at": "2023-11-29 18:18:34"
       };
-      if (kDebugMode) {
-        print(deviceStatus);
-      }
-      final url = Uri.parse('$serverUrl/api/v1/forecast?count=$jsonData');
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        if (kDebugMode) {
-          print('HTTP Request Success');
-          print('Response data: ${response.body}');
-        }
-        // Handle the response as needed
-      } else {
-        if (kDebugMode) {
-          print('HTTP Request Failed');
-        }
-      }
+      socket.emit('wifiLogData', jsonData);
+      // if (kDebugMode) {
+      //   print(deviceStatus);
+      // }
+      // final url = Uri.parse("$serverUrl?$jsonData");
+      // final response = await http.get(url);
+      // if (response.statusCode == 200) {
+      //   if (kDebugMode) {
+      //     print('HTTP Request Success');
+      //     print('Response data: ${response.body}');
+      //   }
+      //   // Handle the response as needed
+      // } else {
+      //   if (kDebugMode) {
+      //     print('HTTP Request Failed');
+      //   }
+      // }
     }
   }
 
@@ -201,41 +229,64 @@ class HomeController extends GetxController{
       // serverUrlCon.text.trim();
       // Create a JSON object with the message and device name
       final jsonData = {
-        "Wifi Connected To" : wifi,
-        "Wifi Disconnected From" : disconnectedWifi,
-        "deviceName"  : deviceName,
-        "imeiNo"      : imeiNo,
-        "modelName"   : modelName,
-        "manufacturer": manufacturer,
-        "Datetime"    : DateTime.now(),
-        // "Carrier Info": carrierInfo.toString().replaceAll('(', '').replaceAll(')', '').replaceAll('CarrierData', ''),
-        "carrierName" : carrierInfo!.carrierName.toString(),
-        "cid" : carrierInfo!.cid.toString(),
-        "isoCountryCode" : carrierInfo!.isoCountryCode.toString(),
-        "lac" : carrierInfo!.lac.toString(),
-        "mobileCountryCode" : carrierInfo!.mobileCountryCode.toString(),
-        "mobilenetworkCode" : carrierInfo!.mobileNetworkCode.toString(),
-        "mobileNetworkOperator" : carrierInfo!.mobileNetworkOperator.toString(),
-        "networkgeneration" : carrierInfo!.networkGeneration.toString(),
-        "radiotype" : carrierInfo!.radioType.toString(),
-        "allowsVOIP" : carrierInfo!.allowsVOIP.toString(),
+        // "Wifi Connected To" : wifi,
+        // "Wifi Disconnected From" : disconnectedWifi,
+        // "deviceName"  : deviceName,
+        // "imeiNo"      : imeiNo,
+        // "modelName"   : modelName,
+        // "manufacturer": manufacturer,
+        // "Datetime"    : DateTime.now(),
+        // // "Carrier Info": carrierInfo.toString().replaceAll('(', '').replaceAll(')', '').replaceAll('CarrierData', ''),
+        // "carrierName" : carrierInfo!.carrierName.toString(),
+        // "cid" : carrierInfo!.cid.toString(),
+        // "isoCountryCode" : carrierInfo!.isoCountryCode.toString(),
+        // "lac" : carrierInfo!.lac.toString(),
+        // "mobileCountryCode" : carrierInfo!.mobileCountryCode.toString(),
+        // "mobilenetworkCode" : carrierInfo!.mobileNetworkCode.toString(),
+        // "mobileNetworkOperator" : carrierInfo!.mobileNetworkOperator.toString(),
+        // "networkgeneration" : carrierInfo!.networkGeneration.toString(),
+        // "radiotype" : carrierInfo!.radioType.toString(),
+        // "allowsVOIP" : carrierInfo!.allowsVOIP.toString(),
+        "linked_state":'connected',
+        "linked_state_datetime": "",
+        "device_id": "",
+        "device_code": "",
+        "device_name": "",
+        "access_point_id": "",
+        "access_point_code": "",
+        "access_point_name": "",
+        "building_id": "",
+        "building_code": "",
+        "building_name": "",
+        "area_id": "",
+        "area_code": "",
+        "area_name": "",
+        "floor": "",
+        "danger_area_type": "",
+        "alert_type": "",
+        "active_user_id": "",
+        "active_user_name": "",
+        "publish_flg": 1,
+        "created_at": "",
+        "updated_at": ""
       };
-      if (kDebugMode) {
-        print(wifi);
-      }
-      final url = Uri.parse('$serverUrl/api/v1/forecast?count=$jsonData');
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        if (kDebugMode) {
-          print('HTTP Request Success');
-          print('Response data: ${response.body}');
-        }
-        // Handle the response as needed
-      } else {
-        if (kDebugMode) {
-          print('HTTP Request Failed');
-        }
-      }
+      socket.emit('wifiLogData', jsonData);
+      // if (kDebugMode) {
+      //   print(wifi);
+      // }
+      // final url = Uri.parse('$serverUrl/api/v1/forecast?count=$jsonData');
+      // final response = await http.get(url);
+      // if (response.statusCode == 200) {
+      //   if (kDebugMode) {
+      //     print('HTTP Request Success');
+      //     print('Response data: ${response.body}');
+      //   }
+      //   // Handle the response as needed
+      // } else {
+      //   if (kDebugMode) {
+      //     print('HTTP Request Failed');
+      //   }
+      // }
     }
     // sendWifiLogToServer(wifi,disconnectedWifi);
   }

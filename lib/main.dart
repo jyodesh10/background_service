@@ -3,6 +3,7 @@ import 'package:background_service_test/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'app_config/app_translations.dart';
+import 'constant/constants.dart';
 import 'services/background_services.dart';
 import 'services/permission_services.dart';
 import 'utils/shared_pref.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
+    SharedPref.write(AppConstant.socketServerUrlKey, "http://192.168.1.117:7000/");
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'title'.tr,

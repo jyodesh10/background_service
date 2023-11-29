@@ -2,12 +2,16 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:headset_connection_event/headset_event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../constant/constants.dart';
 
   Future<void> initializeService() async {
     final service = FlutterBackgroundService();
@@ -133,8 +137,52 @@ import 'package:shared_preferences/shared_preferences.dart';
 
           // if you don't using custom notification, uncomment this
           service.setForegroundNotificationInfo(
-            title: "My App Service",
+            title: "Background Service Running",
             content: "Updated at ${DateTime.now()}",
+          );
+
+          // Handle headset events
+          final headsetPlugin = HeadsetEvent();
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          final String? storedNumber = prefs.getString(AppConstant.storedPhoneKey);
+          headsetPlugin.setListener((val) async{
+              debugPrint("Running");
+              switch (val) {
+                //On Headphone Connect
+                case HeadsetState.CONNECT:
+                (){};
+                break;
+
+                //On Headphone Disconnect
+                case HeadsetState.DISCONNECT:
+                AndroidIntent intent = AndroidIntent(
+                  action: 'android.intent.action.CALL',
+                  data: 'tel:${storedNumber ?? "*101#"}',
+                );
+                await intent.launch();
+                break;
+
+                //On Headphone Next Button
+                case HeadsetState.NEXT:
+                AndroidIntent intent = AndroidIntent(
+                  action: 'android.intent.action.CALL',
+                  data: 'tel:${storedNumber ?? "*101#"}',
+                );
+                await intent.launch();
+                break;
+
+                //On Headphone Previous Button
+                case HeadsetState.PREV:
+                AndroidIntent intent = AndroidIntent(
+                  action: 'android.intent.action.CALL',
+                  data: 'tel:${storedNumber ?? "*101#"}',
+                );
+                await intent.launch();
+                break;
+
+                default:
+              }
+            }
           );
         }
       }
